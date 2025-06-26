@@ -337,6 +337,10 @@ NodeDB::NodeDB()
     moduleConfig.neighbor_info.update_interval =
         Default::getConfiguredOrMinimumValue(moduleConfig.neighbor_info.update_interval, min_neighbor_info_broadcast_secs);
 
+    // Ensure that the antenna info update interval is coerced to the minimum
+    moduleConfig.antenna_info.update_interval =
+        Default::getConfiguredOrMinimumValue(moduleConfig.antenna_info.update_interval, min_antenna_info_broadcast_secs);
+
     // Don't let licensed users to rebroadcast encrypted packets
     if (owner.is_licensed) {
         config.device.rebroadcast_mode = meshtastic_Config_DeviceConfig_RebroadcastMode_LOCAL_ONLY;
@@ -803,6 +807,9 @@ void NodeDB::installDefaultModuleConfig()
     moduleConfig.has_neighbor_info = true;
     moduleConfig.neighbor_info.enabled = false;
 
+    moduleConfig.has_antenna_info = true;
+    moduleConfig.antenna_info.enabled = false;
+
     moduleConfig.has_detection_sensor = true;
     moduleConfig.detection_sensor.enabled = false;
     moduleConfig.detection_sensor.detection_trigger_type = meshtastic_ModuleConfig_DetectionSensorConfig_TriggerType_LOGIC_HIGH;
@@ -873,6 +880,7 @@ void NodeDB::installRoleDefaults(meshtastic_Config_DeviceConfig_Role role)
         config.position.position_broadcast_smart_enabled = false;
         config.position.position_broadcast_secs = UINT32_MAX;
         moduleConfig.neighbor_info.update_interval = UINT32_MAX;
+        moduleConfig.antenna_info.update_interval = UINT32_MAX;
         moduleConfig.telemetry.device_update_interval = UINT32_MAX;
         moduleConfig.telemetry.environment_update_interval = UINT32_MAX;
         moduleConfig.telemetry.air_quality_interval = UINT32_MAX;
@@ -889,6 +897,7 @@ void NodeDB::initModuleConfigIntervals()
     moduleConfig.telemetry.power_update_interval = 0;
     moduleConfig.telemetry.health_update_interval = 0;
     moduleConfig.neighbor_info.update_interval = 0;
+    moduleConfig.antenna_info.update_interval = 0;
     moduleConfig.paxcounter.paxcounter_update_interval = 0;
 }
 
@@ -1340,6 +1349,7 @@ bool NodeDB::saveToDiskNoRetry(int saveWhat)
         moduleConfig.has_store_forward = true;
         moduleConfig.has_telemetry = true;
         moduleConfig.has_neighbor_info = true;
+        moduleConfig.has_antenna_info = true;
         moduleConfig.has_detection_sensor = true;
         moduleConfig.has_ambient_lighting = true;
         moduleConfig.has_audio = true;

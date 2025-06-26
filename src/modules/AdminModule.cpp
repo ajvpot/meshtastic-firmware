@@ -785,6 +785,15 @@ bool AdminModule::handleSetModuleConfig(const meshtastic_ModuleConfig &c)
         }
         moduleConfig.neighbor_info = c.payload_variant.neighbor_info;
         break;
+    case meshtastic_ModuleConfig_antenna_info_tag:
+        LOG_INFO("Set module config: Antenna Info");
+        moduleConfig.has_antenna_info = true;
+        if (moduleConfig.antenna_info.update_interval < min_antenna_info_broadcast_secs) {
+            LOG_DEBUG("Tried to set update_interval too low, setting to %d", default_antenna_info_broadcast_secs);
+            moduleConfig.antenna_info.update_interval = default_antenna_info_broadcast_secs;
+        }
+        moduleConfig.antenna_info = c.payload_variant.antenna_info;
+        break;
     case meshtastic_ModuleConfig_detection_sensor_tag:
         LOG_INFO("Set module config: Detection Sensor");
         moduleConfig.has_detection_sensor = true;

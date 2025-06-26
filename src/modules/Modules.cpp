@@ -27,6 +27,9 @@
 #if !MESHTASTIC_EXCLUDE_NEIGHBORINFO
 #include "modules/NeighborInfoModule.h"
 #endif
+#if !MESHTASTIC_EXCLUDE_ANTENNAINFO
+#include "modules/AntennaInfoModule.h"
+#endif
 #if !MESHTASTIC_EXCLUDE_NODEINFO
 #include "modules/NodeInfoModule.h"
 #endif
@@ -126,6 +129,9 @@ void setupModules()
 #endif
 #if !MESHTASTIC_EXCLUDE_NEIGHBORINFO
         neighborInfoModule = new NeighborInfoModule();
+#endif
+#if !MESHTASTIC_EXCLUDE_ANTENNAINFO
+        antennaInfoModule = new AntennaInfoModule();
 #endif
 #if !MESHTASTIC_EXCLUDE_DETECTIONSENSOR
         detectionSensorModule = new DetectionSensorModule();

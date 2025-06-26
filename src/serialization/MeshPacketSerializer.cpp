@@ -211,6 +211,26 @@ std::string MeshPacketSerializer::JsonSerialize(const meshtastic_MeshPacket *mp,
             }
             break;
         }
+        case meshtastic_PortNum_ANTENNA_INFO_APP: {
+            msgType = "antennainfo";
+            meshtastic_AntennaInfo scratch;
+            meshtastic_AntennaInfo *decoded = NULL;
+            memset(&scratch, 0, sizeof(scratch));
+            if (pb_decode_from_bytes(mp->decoded.payload.bytes, mp->decoded.payload.size, &meshtastic_AntennaInfo_msg,
+                                     &scratch)) {
+                decoded = &scratch;
+                msgPayload["node_id"] = new JSONValue((unsigned int)decoded->node_id);
+                msgPayload["height_m"] = new JSONValue((float)decoded->height_m);
+                msgPayload["azimuth_degrees"] = new JSONValue((unsigned int)decoded->azimuth_degrees);
+                msgPayload["orientation_degrees"] = new JSONValue((unsigned int)decoded->orientation_degrees);
+                msgPayload["eirp_dbm"] = new JSONValue((float)decoded->eirp_dbm);
+                msgPayload["last_updated"] = new JSONValue((unsigned int)decoded->last_updated);
+                jsonObj["payload"] = new JSONValue(msgPayload);
+            } else if (shouldLog) {
+                LOG_ERROR(errStr, msgType.c_str());
+            }
+            break;
+        }
         case meshtastic_PortNum_TRACEROUTE_APP: {
             if (mp->decoded.request_id) { // Only report the traceroute response
                 msgType = "traceroute";

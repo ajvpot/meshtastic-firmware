@@ -213,6 +213,26 @@ std::string MeshPacketSerializer::JsonSerialize(const meshtastic_MeshPacket *mp,
             }
             break;
         }
+        case meshtastic_PortNum_ANTENNA_INFO_APP: {
+            msgType = "antennainfo";
+            meshtastic_AntennaInfo scratch;
+            meshtastic_AntennaInfo *decoded = NULL;
+            memset(&scratch, 0, sizeof(scratch));
+            if (pb_decode_from_bytes(mp->decoded.payload.bytes, mp->decoded.payload.size, &meshtastic_AntennaInfo_msg,
+                                     &scratch)) {
+                decoded = &scratch;
+                jsonObj["payload"]["node_id"] = (unsigned int)decoded->node_id;
+                jsonObj["payload"]["height_m"] = (float)decoded->height_m;
+                jsonObj["payload"]["azimuth_degrees"] = (unsigned int)decoded->azimuth_degrees;
+                jsonObj["payload"]["orientation_degrees"] = (unsigned int)decoded->orientation_degrees;
+                jsonObj["payload"]["eirp_dbm"] = (float)decoded->eirp_dbm;
+                jsonObj["payload"]["last_updated"] = (unsigned int)decoded->last_updated;
+            } else if (shouldLog) {
+                LOG_ERROR("Error decoding proto for antennainfo message!");
+                return "";
+            }
+            break;
+        }
         case meshtastic_PortNum_TRACEROUTE_APP: {
             if (mp->decoded.request_id) { // Only report the traceroute response
                 msgType = "traceroute";
