@@ -417,7 +417,7 @@ typedef enum _meshtastic_Routing_Error {
  (values must be <= 127 to keep protobuf field to one byte in size.
  Detailed background on this field:
  I noticed a funny side effect of lora being so slow: Usually when making
- a protocol there isn’t much need to use message priority to change the order
+ a protocol there isn't much need to use message priority to change the order
  of transmission (because interfaces are fairly fast).
  But for lora where packets can take a few seconds each, it is very important
  to make sure that critical packets are sent ASAP.
@@ -977,7 +977,7 @@ typedef struct _meshtastic_DeviceMetadata {
     bool hasBluetooth;
     /* Indicates that the device has an ethernet peripheral */
     bool hasEthernet;
-    /* Indicates that the device's role in the mesh */
+    /* Indicates the device's role in the mesh */
     meshtastic_Config_DeviceConfig_Role role;
     /* Indicates the device's current enabled position flags */
     uint32_t position_flags;
@@ -1044,6 +1044,22 @@ typedef struct _meshtastic_FromRadio {
         meshtastic_DeviceUIConfig deviceuiConfig;
     };
 } meshtastic_FromRadio;
+
+/* Antenna information message for sharing antenna details across the mesh */
+typedef struct _meshtastic_AntennaInfo {
+    /* The node ID of the node sending antenna information */
+    uint32_t node_id;
+    /* Antenna height in meters above ground level */
+    float height_m;
+    /* Antenna azimuth in degrees (0-360, where 0 is North) */
+    uint32_t azimuth_degrees;
+    /* Antenna orientation (0=vertical, 90=horizontal, etc.) */
+    uint32_t orientation_degrees;
+    /* Effective Isotropic Radiated Power (EIRP) in dBm */
+    float eirp_dbm;
+    /* Timestamp when this information was last updated */
+    uint32_t last_updated;
+} meshtastic_AntennaInfo;
 
 /* A heartbeat message is sent to the node from the client to keep the connection alive.
  This is currently only needed to keep serial connections alive, but can be used by any PhoneAPI. */
@@ -1205,6 +1221,7 @@ extern "C" {
 
 
 
+
 /* Initializer values for message structs */
 #define meshtastic_Position_init_default         {false, 0, false, 0, false, 0, 0, _meshtastic_Position_LocSource_MIN, _meshtastic_Position_AltSource_MIN, 0, 0, false, 0, false, 0, 0, 0, 0, 0, false, 0, false, 0, 0, 0, 0, 0, 0, 0, 0}
 #define meshtastic_User_init_default             {"", "", "", {0}, _meshtastic_HardwareModel_MIN, 0, _meshtastic_Config_DeviceConfig_Role_MIN, {0, {0}}, false, 0}
@@ -1226,6 +1243,7 @@ extern "C" {
 #define meshtastic_NeighborInfo_init_default     {0, 0, 0, 0, {meshtastic_Neighbor_init_default, meshtastic_Neighbor_init_default, meshtastic_Neighbor_init_default, meshtastic_Neighbor_init_default, meshtastic_Neighbor_init_default, meshtastic_Neighbor_init_default, meshtastic_Neighbor_init_default, meshtastic_Neighbor_init_default, meshtastic_Neighbor_init_default, meshtastic_Neighbor_init_default}}
 #define meshtastic_Neighbor_init_default         {0, 0, 0, 0}
 #define meshtastic_DeviceMetadata_init_default   {"", 0, 0, 0, 0, 0, _meshtastic_Config_DeviceConfig_Role_MIN, 0, _meshtastic_HardwareModel_MIN, 0, 0, 0}
+#define meshtastic_AntennaInfo_init_default      {0, 0, 0, 0, 0, 0}
 #define meshtastic_Heartbeat_init_default        {0}
 #define meshtastic_NodeRemoteHardwarePin_init_default {0, false, meshtastic_RemoteHardwarePin_init_default}
 #define meshtastic_ChunkedPayload_init_default   {0, 0, 0, {0, {0}}}
@@ -1251,6 +1269,7 @@ extern "C" {
 #define meshtastic_NeighborInfo_init_zero        {0, 0, 0, 0, {meshtastic_Neighbor_init_zero, meshtastic_Neighbor_init_zero, meshtastic_Neighbor_init_zero, meshtastic_Neighbor_init_zero, meshtastic_Neighbor_init_zero, meshtastic_Neighbor_init_zero, meshtastic_Neighbor_init_zero, meshtastic_Neighbor_init_zero, meshtastic_Neighbor_init_zero, meshtastic_Neighbor_init_zero}}
 #define meshtastic_Neighbor_init_zero            {0, 0, 0, 0}
 #define meshtastic_DeviceMetadata_init_zero      {"", 0, 0, 0, 0, 0, _meshtastic_Config_DeviceConfig_Role_MIN, 0, _meshtastic_HardwareModel_MIN, 0, 0, 0}
+#define meshtastic_AntennaInfo_init_zero         {0, 0, 0, 0, 0, 0}
 #define meshtastic_Heartbeat_init_zero           {0}
 #define meshtastic_NodeRemoteHardwarePin_init_zero {0, false, meshtastic_RemoteHardwarePin_init_zero}
 #define meshtastic_ChunkedPayload_init_zero      {0, 0, 0, {0, {0}}}
@@ -1407,6 +1426,12 @@ extern "C" {
 #define meshtastic_FromRadio_fileInfo_tag        15
 #define meshtastic_FromRadio_clientNotification_tag 16
 #define meshtastic_FromRadio_deviceuiConfig_tag  17
+#define meshtastic_AntennaInfo_node_id_tag       1
+#define meshtastic_AntennaInfo_height_m_tag      2
+#define meshtastic_AntennaInfo_azimuth_degrees_tag 3
+#define meshtastic_AntennaInfo_orientation_degrees_tag 4
+#define meshtastic_AntennaInfo_eirp_dbm_tag      5
+#define meshtastic_AntennaInfo_last_updated_tag  6
 #define meshtastic_ToRadio_packet_tag            1
 #define meshtastic_ToRadio_want_config_id_tag    3
 #define meshtastic_ToRadio_disconnect_tag        4
@@ -1686,6 +1711,16 @@ X(a, STATIC,   SINGULAR, UINT32,   excluded_modules,  12)
 #define meshtastic_DeviceMetadata_CALLBACK NULL
 #define meshtastic_DeviceMetadata_DEFAULT NULL
 
+#define meshtastic_AntennaInfo_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   node_id,           1) \
+X(a, STATIC,   SINGULAR, FLOAT,    height_m,          2) \
+X(a, STATIC,   SINGULAR, UINT32,   azimuth_degrees,   3) \
+X(a, STATIC,   SINGULAR, UINT32,   orientation_degrees,   4) \
+X(a, STATIC,   SINGULAR, FLOAT,    eirp_dbm,          5) \
+X(a, STATIC,   SINGULAR, FIXED32,  last_updated,      6)
+#define meshtastic_AntennaInfo_CALLBACK NULL
+#define meshtastic_AntennaInfo_DEFAULT NULL
+
 #define meshtastic_Heartbeat_FIELDLIST(X, a) \
 
 #define meshtastic_Heartbeat_CALLBACK NULL
@@ -1740,6 +1775,7 @@ extern const pb_msgdesc_t meshtastic_Compressed_msg;
 extern const pb_msgdesc_t meshtastic_NeighborInfo_msg;
 extern const pb_msgdesc_t meshtastic_Neighbor_msg;
 extern const pb_msgdesc_t meshtastic_DeviceMetadata_msg;
+extern const pb_msgdesc_t meshtastic_AntennaInfo_msg;
 extern const pb_msgdesc_t meshtastic_Heartbeat_msg;
 extern const pb_msgdesc_t meshtastic_NodeRemoteHardwarePin_msg;
 extern const pb_msgdesc_t meshtastic_ChunkedPayload_msg;
@@ -1767,6 +1803,7 @@ extern const pb_msgdesc_t meshtastic_ChunkedPayloadResponse_msg;
 #define meshtastic_NeighborInfo_fields &meshtastic_NeighborInfo_msg
 #define meshtastic_Neighbor_fields &meshtastic_Neighbor_msg
 #define meshtastic_DeviceMetadata_fields &meshtastic_DeviceMetadata_msg
+#define meshtastic_AntennaInfo_fields &meshtastic_AntennaInfo_msg
 #define meshtastic_Heartbeat_fields &meshtastic_Heartbeat_msg
 #define meshtastic_NodeRemoteHardwarePin_fields &meshtastic_NodeRemoteHardwarePin_msg
 #define meshtastic_ChunkedPayload_fields &meshtastic_ChunkedPayload_msg
@@ -1777,6 +1814,7 @@ extern const pb_msgdesc_t meshtastic_ChunkedPayloadResponse_msg;
 /* meshtastic_resend_chunks_size depends on runtime parameters */
 /* meshtastic_ChunkedPayloadResponse_size depends on runtime parameters */
 #define MESHTASTIC_MESHTASTIC_MESH_PB_H_MAX_SIZE meshtastic_FromRadio_size
+#define meshtastic_AntennaInfo_size              33
 #define meshtastic_ChunkedPayload_size           245
 #define meshtastic_ClientNotification_size       415
 #define meshtastic_Compressed_size               239

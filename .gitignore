@@ -37,5 +37,4 @@ release/
 .vscode/extensions.json
 /compile_commands.json
 src/mesh/raspihttp/certificate.pem
-src/mesh/raspihttp/private_key.pemsrc/mesh/generated/
-
+src/mesh/raspihttp/private_key.pem

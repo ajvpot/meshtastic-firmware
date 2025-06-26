@@ -82,7 +82,11 @@ typedef enum _meshtastic_ModuleConfig_SerialConfig_Serial_Mode {
     meshtastic_ModuleConfig_SerialConfig_Serial_Mode_WS85 = 6,
     /* VE.Direct is a serial protocol used by Victron Energy products
  https://beta.ivc.no/wiki/index.php/Victron_VE_Direct_DIY_Cable */
-    meshtastic_ModuleConfig_SerialConfig_Serial_Mode_VE_DIRECT = 7
+    meshtastic_ModuleConfig_SerialConfig_Serial_Mode_VE_DIRECT = 7,
+    /* MQTT protocol for sending/receiving MQTT messages over UART */
+    meshtastic_ModuleConfig_SerialConfig_Serial_Mode_MQTT = 8,
+    /* PACKET mode for sending/receiving raw packets over UART */
+    meshtastic_ModuleConfig_SerialConfig_Serial_Mode_PACKET = 9
 } meshtastic_ModuleConfig_SerialConfig_Serial_Mode;
 
 /* TODO: REPLACE */
@@ -164,6 +168,26 @@ typedef struct _meshtastic_ModuleConfig_NeighborInfoConfig {
  Note that this is not available on a channel with default key and name. */
     bool transmit_over_lora;
 } meshtastic_ModuleConfig_NeighborInfoConfig;
+
+/* AntennaInfoModule Config */
+typedef struct _meshtastic_ModuleConfig_AntennaInfoConfig {
+    /* Whether the Module is enabled */
+    bool enabled;
+    /* Interval in seconds of how often we should try to send our
+ Antenna Info (minimum is 3600, i.e., 1 hour) */
+    uint32_t update_interval;
+    /* Antenna height in meters above ground level */
+    float height_m;
+    /* Antenna azimuth in degrees (0-360, where 0 is North) */
+    uint32_t azimuth_degrees;
+    /* Antenna orientation in degrees (0=vertical, 90=horizontal, etc.) */
+    uint32_t orientation_degrees;
+    /* Effective Isotropic Radiated Power (EIRP) in dBm */
+    float eirp_dbm;
+    /* Whether in addition to sending it to MQTT and the PhoneAPI, our AntennaInfo should be transmitted over LoRa.
+ Note that this is not available on a channel with default key and name. */
+    bool transmit_over_lora;
+} meshtastic_ModuleConfig_AntennaInfoConfig;
 
 /* Detection Sensor Module Config */
 typedef struct _meshtastic_ModuleConfig_DetectionSensorConfig {
@@ -446,6 +470,8 @@ typedef struct _meshtastic_ModuleConfig {
         meshtastic_ModuleConfig_DetectionSensorConfig detection_sensor;
         /* TODO: REPLACE */
         meshtastic_ModuleConfig_PaxcounterConfig paxcounter;
+        /* TODO: REPLACE */
+        meshtastic_ModuleConfig_AntennaInfoConfig antenna_info;
     } payload_variant;
 } meshtastic_ModuleConfig;
 
@@ -472,12 +498,13 @@ extern "C" {
 #define _meshtastic_ModuleConfig_SerialConfig_Serial_Baud_ARRAYSIZE ((meshtastic_ModuleConfig_SerialConfig_Serial_Baud)(meshtastic_ModuleConfig_SerialConfig_Serial_Baud_BAUD_921600+1))
 
 #define _meshtastic_ModuleConfig_SerialConfig_Serial_Mode_MIN meshtastic_ModuleConfig_SerialConfig_Serial_Mode_DEFAULT
-#define _meshtastic_ModuleConfig_SerialConfig_Serial_Mode_MAX meshtastic_ModuleConfig_SerialConfig_Serial_Mode_VE_DIRECT
-#define _meshtastic_ModuleConfig_SerialConfig_Serial_Mode_ARRAYSIZE ((meshtastic_ModuleConfig_SerialConfig_Serial_Mode)(meshtastic_ModuleConfig_SerialConfig_Serial_Mode_VE_DIRECT+1))
+#define _meshtastic_ModuleConfig_SerialConfig_Serial_Mode_MAX meshtastic_ModuleConfig_SerialConfig_Serial_Mode_PACKET
+#define _meshtastic_ModuleConfig_SerialConfig_Serial_Mode_ARRAYSIZE ((meshtastic_ModuleConfig_SerialConfig_Serial_Mode)(meshtastic_ModuleConfig_SerialConfig_Serial_Mode_PACKET+1))
 
 #define _meshtastic_ModuleConfig_CannedMessageConfig_InputEventChar_MIN meshtastic_ModuleConfig_CannedMessageConfig_InputEventChar_NONE
 #define _meshtastic_ModuleConfig_CannedMessageConfig_InputEventChar_MAX meshtastic_ModuleConfig_CannedMessageConfig_InputEventChar_BACK
 #define _meshtastic_ModuleConfig_CannedMessageConfig_InputEventChar_ARRAYSIZE ((meshtastic_ModuleConfig_CannedMessageConfig_InputEventChar)(meshtastic_ModuleConfig_CannedMessageConfig_InputEventChar_BACK+1))
+
 
 
 
@@ -510,6 +537,7 @@ extern "C" {
 #define meshtastic_ModuleConfig_MapReportSettings_init_default {0, 0, 0}
 #define meshtastic_ModuleConfig_RemoteHardwareConfig_init_default {0, 0, 0, {meshtastic_RemoteHardwarePin_init_default, meshtastic_RemoteHardwarePin_init_default, meshtastic_RemoteHardwarePin_init_default, meshtastic_RemoteHardwarePin_init_default}}
 #define meshtastic_ModuleConfig_NeighborInfoConfig_init_default {0, 0, 0}
+#define meshtastic_ModuleConfig_AntennaInfoConfig_init_default {0, 0, 0, 0, 0, 0, 0}
 #define meshtastic_ModuleConfig_DetectionSensorConfig_init_default {0, 0, 0, 0, "", 0, _meshtastic_ModuleConfig_DetectionSensorConfig_TriggerType_MIN, 0}
 #define meshtastic_ModuleConfig_AudioConfig_init_default {0, 0, _meshtastic_ModuleConfig_AudioConfig_Audio_Baud_MIN, 0, 0, 0, 0}
 #define meshtastic_ModuleConfig_PaxcounterConfig_init_default {0, 0, 0, 0}
@@ -526,6 +554,7 @@ extern "C" {
 #define meshtastic_ModuleConfig_MapReportSettings_init_zero {0, 0, 0}
 #define meshtastic_ModuleConfig_RemoteHardwareConfig_init_zero {0, 0, 0, {meshtastic_RemoteHardwarePin_init_zero, meshtastic_RemoteHardwarePin_init_zero, meshtastic_RemoteHardwarePin_init_zero, meshtastic_RemoteHardwarePin_init_zero}}
 #define meshtastic_ModuleConfig_NeighborInfoConfig_init_zero {0, 0, 0}
+#define meshtastic_ModuleConfig_AntennaInfoConfig_init_zero {0, 0, 0, 0, 0, 0, 0}
 #define meshtastic_ModuleConfig_DetectionSensorConfig_init_zero {0, 0, 0, 0, "", 0, _meshtastic_ModuleConfig_DetectionSensorConfig_TriggerType_MIN, 0}
 #define meshtastic_ModuleConfig_AudioConfig_init_zero {0, 0, _meshtastic_ModuleConfig_AudioConfig_Audio_Baud_MIN, 0, 0, 0, 0}
 #define meshtastic_ModuleConfig_PaxcounterConfig_init_zero {0, 0, 0, 0}
@@ -556,6 +585,13 @@ extern "C" {
 #define meshtastic_ModuleConfig_NeighborInfoConfig_enabled_tag 1
 #define meshtastic_ModuleConfig_NeighborInfoConfig_update_interval_tag 2
 #define meshtastic_ModuleConfig_NeighborInfoConfig_transmit_over_lora_tag 3
+#define meshtastic_ModuleConfig_AntennaInfoConfig_enabled_tag 1
+#define meshtastic_ModuleConfig_AntennaInfoConfig_update_interval_tag 2
+#define meshtastic_ModuleConfig_AntennaInfoConfig_height_m_tag 3
+#define meshtastic_ModuleConfig_AntennaInfoConfig_azimuth_degrees_tag 4
+#define meshtastic_ModuleConfig_AntennaInfoConfig_orientation_degrees_tag 5
+#define meshtastic_ModuleConfig_AntennaInfoConfig_eirp_dbm_tag 6
+#define meshtastic_ModuleConfig_AntennaInfoConfig_transmit_over_lora_tag 7
 #define meshtastic_ModuleConfig_DetectionSensorConfig_enabled_tag 1
 #define meshtastic_ModuleConfig_DetectionSensorConfig_minimum_broadcast_secs_tag 2
 #define meshtastic_ModuleConfig_DetectionSensorConfig_state_broadcast_secs_tag 3
@@ -655,6 +691,7 @@ extern "C" {
 #define meshtastic_ModuleConfig_ambient_lighting_tag 11
 #define meshtastic_ModuleConfig_detection_sensor_tag 12
 #define meshtastic_ModuleConfig_paxcounter_tag   13
+#define meshtastic_ModuleConfig_antenna_info_tag 14
 
 /* Struct field encoding specification for nanopb */
 #define meshtastic_ModuleConfig_FIELDLIST(X, a) \
@@ -670,7 +707,8 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (payload_variant,remote_hardware,payload_vari
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload_variant,neighbor_info,payload_variant.neighbor_info),  10) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload_variant,ambient_lighting,payload_variant.ambient_lighting),  11) \
 X(a, STATIC,   ONEOF,    MESSAGE,  (payload_variant,detection_sensor,payload_variant.detection_sensor),  12) \
-X(a, STATIC,   ONEOF,    MESSAGE,  (payload_variant,paxcounter,payload_variant.paxcounter),  13)
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload_variant,paxcounter,payload_variant.paxcounter),  13) \
+X(a, STATIC,   ONEOF,    MESSAGE,  (payload_variant,antenna_info,payload_variant.antenna_info),  14)
 #define meshtastic_ModuleConfig_CALLBACK NULL
 #define meshtastic_ModuleConfig_DEFAULT NULL
 #define meshtastic_ModuleConfig_payload_variant_mqtt_MSGTYPE meshtastic_ModuleConfig_MQTTConfig
@@ -686,6 +724,7 @@ X(a, STATIC,   ONEOF,    MESSAGE,  (payload_variant,paxcounter,payload_variant.p
 #define meshtastic_ModuleConfig_payload_variant_ambient_lighting_MSGTYPE meshtastic_ModuleConfig_AmbientLightingConfig
 #define meshtastic_ModuleConfig_payload_variant_detection_sensor_MSGTYPE meshtastic_ModuleConfig_DetectionSensorConfig
 #define meshtastic_ModuleConfig_payload_variant_paxcounter_MSGTYPE meshtastic_ModuleConfig_PaxcounterConfig
+#define meshtastic_ModuleConfig_payload_variant_antenna_info_MSGTYPE meshtastic_ModuleConfig_AntennaInfoConfig
 
 #define meshtastic_ModuleConfig_MQTTConfig_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, BOOL,     enabled,           1) \
@@ -724,6 +763,17 @@ X(a, STATIC,   SINGULAR, UINT32,   update_interval,   2) \
 X(a, STATIC,   SINGULAR, BOOL,     transmit_over_lora,   3)
 #define meshtastic_ModuleConfig_NeighborInfoConfig_CALLBACK NULL
 #define meshtastic_ModuleConfig_NeighborInfoConfig_DEFAULT NULL
+
+#define meshtastic_ModuleConfig_AntennaInfoConfig_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, BOOL,     enabled,           1) \
+X(a, STATIC,   SINGULAR, UINT32,   update_interval,   2) \
+X(a, STATIC,   SINGULAR, FLOAT,    height_m,          3) \
+X(a, STATIC,   SINGULAR, UINT32,   azimuth_degrees,   4) \
+X(a, STATIC,   SINGULAR, UINT32,   orientation_degrees,   5) \
+X(a, STATIC,   SINGULAR, FLOAT,    eirp_dbm,          6) \
+X(a, STATIC,   SINGULAR, BOOL,     transmit_over_lora,   7)
+#define meshtastic_ModuleConfig_AntennaInfoConfig_CALLBACK NULL
+#define meshtastic_ModuleConfig_AntennaInfoConfig_DEFAULT NULL
 
 #define meshtastic_ModuleConfig_DetectionSensorConfig_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, BOOL,     enabled,           1) \
@@ -857,6 +907,7 @@ extern const pb_msgdesc_t meshtastic_ModuleConfig_MQTTConfig_msg;
 extern const pb_msgdesc_t meshtastic_ModuleConfig_MapReportSettings_msg;
 extern const pb_msgdesc_t meshtastic_ModuleConfig_RemoteHardwareConfig_msg;
 extern const pb_msgdesc_t meshtastic_ModuleConfig_NeighborInfoConfig_msg;
+extern const pb_msgdesc_t meshtastic_ModuleConfig_AntennaInfoConfig_msg;
 extern const pb_msgdesc_t meshtastic_ModuleConfig_DetectionSensorConfig_msg;
 extern const pb_msgdesc_t meshtastic_ModuleConfig_AudioConfig_msg;
 extern const pb_msgdesc_t meshtastic_ModuleConfig_PaxcounterConfig_msg;
@@ -875,6 +926,7 @@ extern const pb_msgdesc_t meshtastic_RemoteHardwarePin_msg;
 #define meshtastic_ModuleConfig_MapReportSettings_fields &meshtastic_ModuleConfig_MapReportSettings_msg
 #define meshtastic_ModuleConfig_RemoteHardwareConfig_fields &meshtastic_ModuleConfig_RemoteHardwareConfig_msg
 #define meshtastic_ModuleConfig_NeighborInfoConfig_fields &meshtastic_ModuleConfig_NeighborInfoConfig_msg
+#define meshtastic_ModuleConfig_AntennaInfoConfig_fields &meshtastic_ModuleConfig_AntennaInfoConfig_msg
 #define meshtastic_ModuleConfig_DetectionSensorConfig_fields &meshtastic_ModuleConfig_DetectionSensorConfig_msg
 #define meshtastic_ModuleConfig_AudioConfig_fields &meshtastic_ModuleConfig_AudioConfig_msg
 #define meshtastic_ModuleConfig_PaxcounterConfig_fields &meshtastic_ModuleConfig_PaxcounterConfig_msg
@@ -890,6 +942,7 @@ extern const pb_msgdesc_t meshtastic_RemoteHardwarePin_msg;
 /* Maximum encoded size of messages (where known) */
 #define MESHTASTIC_MESHTASTIC_MODULE_CONFIG_PB_H_MAX_SIZE meshtastic_ModuleConfig_size
 #define meshtastic_ModuleConfig_AmbientLightingConfig_size 14
+#define meshtastic_ModuleConfig_AntennaInfoConfig_size 32
 #define meshtastic_ModuleConfig_AudioConfig_size 19
 #define meshtastic_ModuleConfig_CannedMessageConfig_size 49
 #define meshtastic_ModuleConfig_DetectionSensorConfig_size 44
