@@ -338,8 +338,8 @@ NodeDB::NodeDB()
         Default::getConfiguredOrMinimumValue(moduleConfig.neighbor_info.update_interval, min_neighbor_info_broadcast_secs);
 
     // Ensure that the antenna info update interval is coerced to the minimum
-    // moduleConfig.antenna_info.update_interval =
-    //     Default::getConfiguredOrMinimumValue(moduleConfig.antenna_info.update_interval, min_antenna_info_broadcast_secs);
+    moduleConfig.antenna_info.update_interval =
+        Default::getConfiguredOrMinimumValue(moduleConfig.antenna_info.update_interval, min_antenna_info_broadcast_secs);
 
     // Don't let licensed users to rebroadcast encrypted packets
     if (owner.is_licensed) {
