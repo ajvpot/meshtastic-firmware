@@ -84,6 +84,9 @@ typedef enum _meshtastic_PortNum {
     /* Paxcounter lib included in the firmware
  ENCODING: protobuf */
     meshtastic_PortNum_PAXCOUNTER_APP = 34,
+    /* Antenna information app for sharing antenna details across the mesh
+ ENCODING: Protobuf */
+    meshtastic_PortNum_ANTENNA_INFO_APP = 35,
     /* Provides a hardware serial interface to send and receive from the Meshtastic network.
  Connect to the RX/TX pins of a device with 38400 8N1. Packets received from the Meshtastic
  network is forwarded to the RX pin while sending a packet to TX will go out to the Mesh network.
@@ -121,9 +124,6 @@ typedef enum _meshtastic_PortNum {
     /* Aggregates edge info for the network by sending out a list of each node's neighbors
  ENCODING: Protobuf */
     meshtastic_PortNum_NEIGHBORINFO_APP = 71,
-    /* Antenna information app for sharing antenna details across the mesh
- ENCODING: Protobuf */
-    meshtastic_PortNum_ANTENNA_INFO_APP = 35,
     /* ATAK Plugin
  Portnum for payloads from the official Meshtastic ATAK plugin */
     meshtastic_PortNum_ATAK_PLUGIN = 72,
