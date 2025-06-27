@@ -66,7 +66,11 @@ void AntennaInfoModule::sendAntennaInfo(NodeNum dest, bool wantReplies)
         p->decoded.want_response = wantReplies;
         p->priority = meshtastic_MeshPacket_Priority_BACKGROUND;
         printAntennaInfo("SENDING", &antennaInfo);
+        LOG_INFO("AntennaInfo: Sending packet to mesh, dest=0x%x, wantReplies=%d", dest, wantReplies);
         service->sendToMesh(p, RX_SRC_LOCAL, true);
+        LOG_INFO("AntennaInfo: Packet sent to mesh successfully");
+    } else {
+        LOG_WARN("AntennaInfo: Failed to collect antenna info, not sending packet");
     }
 }
 
@@ -76,10 +80,15 @@ Will be used for broadcast.
 */
 int32_t AntennaInfoModule::runOnce()
 {
+    LOG_INFO("AntennaInfo: runOnce() called, enabled=%d, transmit_over_lora=%d", 
+             moduleConfig.antenna_info.enabled, moduleConfig.antenna_info.transmit_over_lora);
+    
     if (moduleConfig.antenna_info.transmit_over_lora &&
         airTime->isTxAllowedChannelUtil(true) && airTime->isTxAllowedAirUtil()) {
+        LOG_INFO("AntennaInfo: Sending over LoRa (broadcast)");
         sendAntennaInfo(NODENUM_BROADCAST, false);
     } else {
+        LOG_INFO("AntennaInfo: Sending over non-LoRa (broadcast_no_lora)");
         sendAntennaInfo(NODENUM_BROADCAST_NO_LORA, false);
     }
     return Default::getConfiguredOrDefaultMs(moduleConfig.antenna_info.update_interval, default_antenna_info_broadcast_secs);
