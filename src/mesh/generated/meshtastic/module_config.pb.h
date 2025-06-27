@@ -180,8 +180,7 @@ typedef struct _meshtastic_ModuleConfig_AntennaInfoConfig {
     uint32_t orientation_degrees;
     /* Effective Isotropic Radiated Power (EIRP) in dBm */
     float eirp_dbm;
-    /* Whether in addition to sending it to MQTT and the PhoneAPI, our AntennaInfo should be transmitted over LoRa.
- Note that this is not available on a channel with default key and name. */
+    /* Whether in addition to sending it to MQTT and the PhoneAPI, our AntennaInfo should be transmitted over LoRa. */
     bool transmit_over_lora;
 } meshtastic_ModuleConfig_AntennaInfoConfig;
 

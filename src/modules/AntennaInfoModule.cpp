@@ -77,7 +77,6 @@ Will be used for broadcast.
 int32_t AntennaInfoModule::runOnce()
 {
     if (moduleConfig.antenna_info.transmit_over_lora &&
-        (!channels.isDefaultChannel(channels.getPrimaryIndex()) || !RadioInterface::uses_default_frequency_slot) &&
         airTime->isTxAllowedChannelUtil(true) && airTime->isTxAllowedAirUtil()) {
         sendAntennaInfo(NODENUM_BROADCAST, false);
     } else {
